@@ -67,22 +67,23 @@ const goToRegister = () => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  background-image: url("@/assets/bg.jpg");
+  /* align-items: center; */
+  background-image: url("@/assets/background.png");
   background-repeat: no-repeat;
-  background-size: 100%;
-  background-position-x: 30%;
-  background-position-y: 30%;
+  background-size: 120%;
+  background-position-x: 60%;
+  background-position-y: 65%;
 }
 .loginContainer {
   width: 27rem;
   height: 27rem;
   display: flex;
+  margin-left: 20%;
   flex-direction: column;
   align-items: center;
   border-radius: 5%;
   background-color: #ffffff;
-  box-shadow: 0 0 5rem rgb(16, 15, 15);
+  box-shadow: 0 0 5rem rgb(111, 107, 107);
 }
 h1 {
   margin-top: 5rem;

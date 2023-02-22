@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="tableData" style="width: 100%">
+  <el-table max-height="400" :data="tableData" style="width: 100%">
     <el-table-column prop="name" label="姓名" width="200" />
     <el-table-column prop="identity" label="管理员级别" width="200" />
     <el-table-column prop="address" label="地址" width="300" />

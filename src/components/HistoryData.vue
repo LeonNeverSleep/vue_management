@@ -1,23 +1,29 @@
 <template>
-  <div class="demo-date-picker">
-    <div class="block">
-      <el-date-picker
-        v-model="value1"
-        type="daterange"
-        range-separator="To"
-        start-placeholder="Start date"
-        end-placeholder="End date"
-        :size="size"
-      />
+  <div class="historyData">
+    <div class="demo-date-picker">
+      <div class="block">
+        <el-date-picker
+          v-model="value1"
+          type="daterange"
+          range-separator="To"
+          start-placeholder="Start date"
+          end-placeholder="End date"
+          :size="size"
+        />
+      </div>
+    </div>
+    <div v-show="dateChecked" class="showHistory">
+      <h1>这里显示echarts柱状图等</h1>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 const value1 = ref("");
 const value2 = ref("");
+const dateChecked = ref(false);
 
 const shortcuts = [
   {

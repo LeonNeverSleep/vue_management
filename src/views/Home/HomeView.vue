@@ -95,6 +95,11 @@ onMounted(() => {
   height: 100%;
   position: relative;
   background-color: rgb(185, 165, 165);
+  background-image: url("@/assets/homeViewBg.jpg");
+  background-repeat: no-repeat;
+  background-size: 120%;
+  background-position-x: 60%;
+  background-position-y: 65%;
 }
 .topNav {
   position: relative;
@@ -105,6 +110,7 @@ onMounted(() => {
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
   box-shadow: 0 0 3rem rgb(107, 107, 107);
+  opacity: 90%;
 }
 .leftMenu {
   width: 10vw;
@@ -114,6 +120,7 @@ onMounted(() => {
   border-radius: 30px;
   box-shadow: 0 0 3rem rgb(107, 107, 107);
   background-color: #ffffff;
+  opacity: 90%;
 }
 .logoBox {
   float: left;
@@ -155,6 +162,7 @@ onMounted(() => {
   box-shadow: 0 0 3rem rgb(107, 107, 107);
   background-color: #ffffff;
   box-sizing: border-box;
+  opacity: 90%;
 }
 .userCard a {
   display: inline-block;
