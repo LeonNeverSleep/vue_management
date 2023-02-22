@@ -2,10 +2,14 @@
   <div class="home">
     <div class="topNav">
       <div class="logoBox">
-        <img src="@/assets/logo.png" alt="" />
+        <img src="@/assets/title.png" alt="" />
       </div>
+      <div class="sysTitle"><h1>博物馆文物保护柜系统</h1></div>
       <div class="userCard">
-        <h1>你好！xxx管理员，</h1>
+        <h1>
+          你好！{{ store.state.username }}
+          {{ store.state.adminLevel }}级管理员，
+        </h1>
         <div class="logout">
           <a href="/">退出登录</a>
         </div>
@@ -23,23 +27,23 @@
             <el-icon><user /></el-icon>
             <span>用户管理</span>
           </template>
-          <el-menu-item index="userlist">查看用户列表</el-menu-item>
-          <el-menu-item index="userinfo">当前用户信息</el-menu-item>
-          <el-menu-item index="edituser">修改用户信息</el-menu-item>
+          <el-menu-item index="userlist">用户列表</el-menu-item>
+          <el-menu-item index="editUserInfo">个人信息</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="2">
           <template #title>
             <el-icon><Star /></el-icon>
-            <span>文物管理</span>
+            <span>文物柜管理</span>
           </template>
-          <el-menu-item index="culturalreliclist">查看文物列表</el-menu-item>
+          <el-menu-item index="culturalreliclist">文物列表</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="3">
           <template #title>
             <el-icon><Camera /></el-icon>
             <span>实时监控</span>
           </template>
-          <el-menu-item index="4-1">展柜监控</el-menu-item>
+          <el-menu-item index="monitoring">环境监控</el-menu-item>
+          <el-menu-item index="history">历史数据</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="4">
           <template #title>
@@ -66,14 +70,23 @@
     </div>
     <div class="showArea">
       <router-view />
+      <div v-show="route.path === '/home'" class="homeviewDefault">aaa</div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-
+import { onMounted, ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter, useRoute } from "vue-router";
 const isCollapse = ref(false);
+const router = useRouter();
+const store = useStore();
+const route = useRoute();
+onMounted(() => {
+  console.log("aka拿到了", store);
+  console.log("aka拿到了", store.state.username, store.state.adminLevel);
+});
 </script>
 
 <style>
@@ -108,8 +121,8 @@ const isCollapse = ref(false);
 }
 .logoBox img {
   margin: 1vh 0 0 3vw;
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
 }
 .userCard {
   position: absolute;
@@ -117,7 +130,7 @@ const isCollapse = ref(false);
   flex-direction: row;
   justify-content: space-between;
   left: 60%;
-  top: -28%;
+  top: 10%;
   width: 500px;
   height: 100%;
   line-height: 35px;
@@ -127,7 +140,7 @@ const isCollapse = ref(false);
 .logout {
   width: 100px;
   height: 100px;
-  margin: 7% 0 0 0;
+  margin: 5% 0 0 0;
   /* background-color: aqua; */
 }
 .showArea {
@@ -152,11 +165,19 @@ const isCollapse = ref(false);
   color: black;
   font-weight: bold;
 }
+.sysTitle {
+  position: absolute;
+  top: 5%;
+  left: 12%;
+}
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 150px;
   min-height: 400px;
 }
 .el-menu {
   border-right: none;
+}
+.el-sub-menu .el-menu-item {
+  min-width: 150px !important;
 }
 </style>
