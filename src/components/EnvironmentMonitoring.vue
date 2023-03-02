@@ -24,7 +24,7 @@
           inactive-text="关"
         />
       </div>
-      <div class="door">
+      <!-- <div class="door">
         安全柜门锁
         <el-switch
           @change="handleLockChange"
@@ -32,7 +32,7 @@
           active-text="开"
           inactive-text="关"
         />
-      </div>
+      </div> -->
     </div>
     <div class="temp">
       这里展示温度
@@ -62,6 +62,7 @@
         :color="['#8a2be2', '#8a2be2', '#02aeff']"
         :valuesize="28"
         :value="smoke"
+        :isSmoke="true"
       ></Pie>
     </div>
   </div>
@@ -80,7 +81,7 @@ let smoke = ref(0);
 let deviceState = ref(false);
 let ledState = ref(false);
 let buzzerState = ref(false);
-let doorState = ref(false);
+// let doorState = ref(false);
 
 /**订阅列表**/
 const subAlarmTopicType = () => {
@@ -145,9 +146,9 @@ const handleLedChange = () => {
     client.value.publish(ledTopic, "open");
   }
 };
-const handleLockChange = () => {
-  console.log("handleLockChange");
-};
+// const handleLockChange = () => {
+//   console.log("handleLockChange");
+// };
 deviceMqttMsg();
 onBeforeUnmount(() => {
   // 组件注销前把mqtt关掉。

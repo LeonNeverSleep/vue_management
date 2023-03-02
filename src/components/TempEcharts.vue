@@ -1,5 +1,5 @@
 <template>
-  <div id="main"></div>
+  <div id="left"></div>
 </template>
 
 <script setup>
@@ -8,13 +8,12 @@ import { onMounted } from "vue";
 let option;
 const echartsData = defineProps({
   tempData: Array,
-  humiData: Array,
   timeData: Array,
 });
 
 option = {
   title: {
-    text: "Rainfall and Flow Relationship",
+    text: "历史温度图",
     left: "center",
   },
   grid: {
@@ -22,12 +21,9 @@ option = {
   },
   toolbox: {
     feature: {
-      dataZoom: {
-        yAxisIndex: "none",
-      },
-      restore: {},
       saveAsImage: {},
     },
+    right: 40,
   },
   tooltip: {
     trigger: "axis",
@@ -40,7 +36,7 @@ option = {
     },
   },
   legend: {
-    data: ["温度", "湿度"],
+    data: ["温度"],
     left: 10,
   },
   dataZoom: [
@@ -73,13 +69,6 @@ option = {
       name: "温度(℃)",
       type: "value",
     },
-    {
-      name: "湿度(%)",
-      nameLocation: "start",
-      alignTicks: true,
-      type: "value",
-      inverse: true,
-    },
   ],
   series: [
     {
@@ -111,48 +100,19 @@ option = {
       // prettier-ignore
       data: echartsData.tempData,
     },
-    {
-      name: "湿度",
-      type: "line",
-      yAxisIndex: 1,
-      areaStyle: {},
-      lineStyle: {
-        width: 1,
-      },
-      emphasis: {
-        focus: "series",
-      },
-      markArea: {
-        silent: true,
-        itemStyle: {
-          opacity: 0.3,
-        },
-        data: [
-          [
-            {
-              xAxis: "2009/9/10\n7:00",
-            },
-            {
-              xAxis: "2009/9/20\n7:00",
-            },
-          ],
-        ],
-      },
-      // prettier-ignore
-      data: echartsData.humiData,
-    },
   ],
 };
 onMounted(() => {
-  let chartDom = document.getElementById("main");
+  let chartDom = document.getElementById("left");
   let myChart = echarts.init(chartDom);
   option && myChart.setOption(option);
 });
 </script>
 
 <style>
-#main {
-  width: 1000px;
-  height: 300px;
+#left {
+  width: 300px;
+  height: 250px;
+  margin-right: 20px;
 }
 </style>

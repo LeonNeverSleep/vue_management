@@ -14,11 +14,9 @@
       </div>
     </div>
     <div v-if="dateChecked" class="showHistory">
-      <EchartsLine
-        :tempData="tempData"
-        :humiData="humiData"
-        :timeData="timeData"
-      ></EchartsLine>
+      <TempEcharts :tempData="tempData" :timeData="timeData"></TempEcharts>
+      <HumiEcharts :humiData="humiData" :timeData="timeData"></HumiEcharts>
+      <SmokeEcharts :smokeData="smokeData" :timeData="timeData"></SmokeEcharts>
     </div>
   </div>
 </template>
@@ -27,14 +25,17 @@
 import { ref, watch } from "vue";
 import { formatterDate } from "@/utils/date.js";
 import { getHistoryData } from "@/request/relic.js";
-import EchartsLine from "@/components/EchartsLine.vue";
+import TempEcharts from "@/components/TempEcharts.vue";
+import HumiEcharts from "@/components/HumiEcharts.vue";
+import SmokeEcharts from "@/components/SmokeEcharts.vue";
 import dayjs from "dayjs";
 const value1 = ref("");
 const value2 = ref("");
 const dateChecked = ref(false);
-const tempData = ref([]);
-const humiData = ref([]);
-const timeData = ref([]);
+const tempData: any = ref([]);
+const humiData: any = ref([]);
+const smokeData: any = ref([]);
+const timeData: any = ref([]);
 const shortcuts = [
   {
     text: "Last week",
@@ -99,6 +100,7 @@ const handleChange = () => {
       e.recorddata = JSON.parse(e.recorddata);
       tempData.value.push(e.recorddata.tem);
       humiData.value.push(e.recorddata.hum);
+      smokeData.value.push(e.recorddata.mq);
       timeData.value.push(e.recordtime);
     });
     dateChecked.value = true;
@@ -107,6 +109,10 @@ const handleChange = () => {
 </script>
 
 <style scoped>
+.showHistory {
+  display: flex;
+  flex-direction: row;
+}
 .demo-date-picker {
   display: flex;
   margin-top: -2%;

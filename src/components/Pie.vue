@@ -26,6 +26,10 @@ export default {
       type: Number,
       default: 1,
     },
+    isSmoke: {
+      type: Boolean,
+      default: false,
+    },
     valuesize: {
       type: Number,
       default: 35,
@@ -235,7 +239,12 @@ export default {
         let option = {
           title: [
             {
-              text: props.value + (props.typeValue === 1 ? "℃" : "%"), //动态传递
+              text:
+                props.value + props.isSmoke
+                  ? "mg/m³"
+                  : props.typeValue === 1
+                  ? "℃"
+                  : "%", //动态传递
               x: "50%",
               y: "45%",
               textAlign: "center",
