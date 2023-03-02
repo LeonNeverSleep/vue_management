@@ -3,28 +3,38 @@
     <div class="demo-date-picker">
       <div class="block">
         <el-date-picker
-          v-model="value1"
-          type="daterange"
+          v-model="value2"
+          type="datetimerange"
+          :shortcuts="shortcuts"
           range-separator="To"
           start-placeholder="Start date"
           end-placeholder="End date"
-          :size="size"
+          @change="handleChange"
         />
       </div>
     </div>
-    <div v-show="dateChecked" class="showHistory">
-      <h1>这里显示echarts柱状图等</h1>
+    <div v-if="dateChecked" class="showHistory">
+      <EchartsLine
+        :tempData="tempData"
+        :humiData="humiData"
+        :timeData="timeData"
+      ></EchartsLine>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-
+import { formatterDate } from "@/utils/date.js";
+import { getHistoryData } from "@/request/relic.js";
+import EchartsLine from "@/components/EchartsLine.vue";
+import dayjs from "dayjs";
 const value1 = ref("");
 const value2 = ref("");
 const dateChecked = ref(false);
-
+const tempData = ref([]);
+const humiData = ref([]);
+const timeData = ref([]);
 const shortcuts = [
   {
     text: "Last week",
@@ -54,11 +64,52 @@ const shortcuts = [
     },
   },
 ];
+const handleChange = () => {
+  console.log("ttt", value2.value);
+  let startTime = formatterDate(value2.value[0]);
+  let endTime = formatterDate(value2.value[1]);
+  console.log("ttt==>", startTime);
+  console.log("yyy==>", endTime);
+  console.log("2023-02-16 10:00:01" <= "2023-02-16 10:00:02");
+  if (startTime === endTime) {
+    endTime = endTime.replace("00:00:00", "24:00:00");
+  }
+  getHistoryData().then((res) => {
+    const historyData = res.data.data;
+    console.log("原来的数据", res.data.data);
+    historyData.forEach((element: any) => {
+      element.recordtime = dayjs(element.recordtime).format(
+        "YYYY-MM-DD HH:mm:ss"
+      );
+    });
+    console.log("kkkkkkkkk", historyData);
+    const newArr: any = [];
+    const newArr2: any = [];
+    historyData.forEach((element: any) => {
+      if (startTime <= element.recordtime) {
+        newArr.push(element);
+      }
+    });
+    newArr.forEach((element: any) => {
+      if (endTime >= element.recordtime) {
+        newArr2.push(element);
+      }
+    });
+    newArr2.forEach((e: any) => {
+      e.recorddata = JSON.parse(e.recorddata);
+      tempData.value.push(e.recorddata.tem);
+      humiData.value.push(e.recorddata.hum);
+      timeData.value.push(e.recordtime);
+    });
+    dateChecked.value = true;
+  });
+};
 </script>
 
 <style scoped>
 .demo-date-picker {
   display: flex;
+  margin-top: -2%;
   width: 100%;
   padding: 0;
   flex-wrap: wrap;

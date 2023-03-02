@@ -2,7 +2,7 @@
   <div class="home">
     <div class="topNav">
       <div class="logoBox">
-        <img src="@/assets/title.png" alt="" />
+        <img @click="goToHome" src="@/assets/title.png" alt="" />
       </div>
       <div class="sysTitle"><h1>博物馆文物保护柜系统</h1></div>
       <div class="userCard">
@@ -70,7 +70,9 @@
     </div>
     <div class="showArea">
       <router-view />
-      <div v-show="route.path === '/home'" class="homeviewDefault">aaa</div>
+      <div v-show="route.path === '/home'" class="homeviewDefault">
+        <img src="@/assets/system.png" alt="" />
+      </div>
     </div>
   </div>
 </template>
@@ -83,6 +85,9 @@ const isCollapse = ref(false);
 const router = useRouter();
 const store = useStore();
 const route = useRoute();
+const goToHome = () => {
+  router.push("/home");
+};
 onMounted(() => {
   console.log("aka拿到了", store);
   console.log("aka拿到了", store.state.username, store.state.adminLevel);
@@ -130,6 +135,7 @@ onMounted(() => {
   margin: 1vh 0 0 3vw;
   width: 70px;
   height: 70px;
+  cursor: pointer;
 }
 .userCard {
   position: absolute;
@@ -177,6 +183,11 @@ onMounted(() => {
   position: absolute;
   top: 5%;
   left: 12%;
+}
+.homeviewDefault img {
+  width: 600px;
+  height: 400px;
+  margin-left: 16%;
 }
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 150px;

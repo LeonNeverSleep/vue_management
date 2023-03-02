@@ -41,6 +41,11 @@ const routes = [
     path: '/register',
     name: 'register',
     component: () => import('../views/Register/Register.vue')
+  },
+  {
+    path: '/blank',
+    name: 'blank',
+    component: () => import('../views/Blank/Blank.vue')
   }
 ]
 const router = createRouter({
@@ -49,7 +54,7 @@ const router = createRouter({
 })
 router.beforeEach((to, from, next) => {
   console.log(to, from);
-  if (to.name === 'userlist' || to.name === 'home' || to.name === 'monitoring' || to.name === 'culturalreliclist') {
+  if (to.name === 'userlist' || to.name === 'home' || to.name === 'monitoring' || to.name === 'culturalreliclist' || to.name === 'history' || to.name === 'blank') {
     if (sessionStorage.getItem("token")) {
       next()
     } else {

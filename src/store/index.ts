@@ -9,6 +9,7 @@ export default createStore({
     address: '',
     phone: '',
     editRelic: {},
+    userList: []
   },
   getters: {
   },
@@ -34,6 +35,9 @@ export default createStore({
     changeEditRelic(state, data) {
       state.editRelic = data
     },
+    changeUserList(state, data) {
+      state.userList = data
+    }
   },
   actions: {
   },

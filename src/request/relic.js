@@ -20,3 +20,6 @@ export function addRelic(data) {
 export function getAllRelics() {
     return request.get('/allRelics');
 }
+export function getHistoryData() {
+    return request.get('/getHistoryData')
+}
