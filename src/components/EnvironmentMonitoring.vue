@@ -8,21 +8,11 @@
       </div>
       <div class="led">
         LED灯开关
-        <el-switch
-          @change="handleLedChange"
-          v-model="ledState"
-          active-text="开"
-          inactive-text="关"
-        /><br />
+        <el-switch @change="handleLedChange" v-model="ledState" active-text="开" inactive-text="关" /><br />
       </div>
       <div class="buzzer">
         蜂鸣器报警
-        <el-switch
-          @change="handleBuzChange"
-          v-model="buzzerState"
-          active-text="开"
-          inactive-text="关"
-        />
+        <el-switch @change="handleBuzChange" v-model="buzzerState" active-text="开" inactive-text="关" />
       </div>
       <!-- <div class="door">
         安全柜门锁
@@ -34,36 +24,20 @@
         />
       </div> -->
     </div>
-    <div class="temp">
+    <div class="pieSize">
       这里展示温度
-      <Pie
-        :typeValue="1"
-        :titlecolor="'#8a2be2'"
-        :color="['#8a2be2', '#8a2be2', '#02aeff']"
-        :value="temp"
-        :valuesize="28"
-      ></Pie>
+      <Pie :typeValue="1" :titlecolor="'#8a2be2'" :color="['#8a2be2', '#8a2be2', '#02aeff']" :value="temp"
+        :valuesize="20"></Pie>
     </div>
-    <div class="humi">
+    <div class="pieSize">
       这里展示湿度
-      <Pie
-        :typeValue="2"
-        :titlecolor="'#8a2be2'"
-        :color="['#8a2be2', '#8a2be2', '#02aeff']"
-        :valuesize="28"
-        :value="humi"
-      ></Pie>
+      <Pie :typeValue="2" :titlecolor="'#8a2be2'" :color="['#8a2be2', '#8a2be2', '#02aeff']" :valuesize="20"
+        :value="humi"></Pie>
     </div>
-    <div class="smoke">
+    <div class="pieSize">
       这里展示烟雾浓度
-      <Pie
-        :typeValue="3"
-        :titlecolor="'#8a2be2'"
-        :color="['#8a2be2', '#8a2be2', '#02aeff']"
-        :valuesize="28"
-        :value="smoke"
-        :isSmoke="true"
-      ></Pie>
+      <Pie :typeValue="3" :titlecolor="'#8a2be2'" :color="['#8a2be2', '#8a2be2', '#02aeff']" :valuesize="18"
+        :value="smoke" :isSmoke="true"></Pie>
     </div>
   </div>
 </template>
@@ -163,21 +137,14 @@ onBeforeUnmount(() => {
   flex-direction: row;
   justify-content: space-around;
 }
-.humi {
-  width: 190px;
+
+.pieSize {
+  width: 230px;
+  height: 230px;
   margin-top: 3%;
-  height: 190px;
 }
-.temp {
-  width: 190px;
-  margin-top: 3%;
-  height: 190px;
-}
-.smoke {
-  width: 190px;
-  margin-top: 3%;
-  height: 190px;
-}
+
+
 #device {
   width: 100px;
   height: 300px;

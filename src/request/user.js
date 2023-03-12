@@ -22,6 +22,11 @@ export function edit(data) {
         data
     });
 }
+export function editUserData(data) {
+    return request.post('/editUserData', {
+        data
+    });
+}
 export function recordEnv(data) {
     return request.post('/recordEnv', {
         data

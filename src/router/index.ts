@@ -54,7 +54,7 @@ const router = createRouter({
 })
 router.beforeEach((to, from, next) => {
   console.log(to, from);
-  if (to.name === 'userlist' || to.name === 'home' || to.name === 'monitoring' || to.name === 'culturalreliclist' || to.name === 'history' || to.name === 'blank') {
+  if (to.name === 'userlist' || to.name === 'home' || to.name === 'monitoring' || to.name === 'culturalreliclist' || to.name === 'history') {
     if (sessionStorage.getItem("token")) {
       next()
     } else {

@@ -4,7 +4,9 @@
       <div class="logoBox">
         <img @click="goToHome" src="@/assets/title.png" alt="" />
       </div>
-      <div class="sysTitle"><h1>博物馆文物保护柜系统</h1></div>
+      <div class="sysTitle">
+        <h1>博物馆文物保护柜系统</h1>
+      </div>
       <div class="userCard">
         <h1>
           你好！{{ store.state.username }}
@@ -16,15 +18,12 @@
       </div>
     </div>
     <div class="leftMenu">
-      <el-menu
-        class="el-menu-vertical-demo"
-        :collapse="isCollapse"
-        router
-        unique-opened
-      >
+      <el-menu class="el-menu-vertical-demo" :collapse="isCollapse" router unique-opened>
         <el-sub-menu index="1">
           <template #title>
-            <el-icon><user /></el-icon>
+            <el-icon>
+              <user />
+            </el-icon>
             <span>用户管理</span>
           </template>
           <el-menu-item index="userlist">用户列表</el-menu-item>
@@ -32,14 +31,18 @@
         </el-sub-menu>
         <el-sub-menu index="2">
           <template #title>
-            <el-icon><Star /></el-icon>
+            <el-icon>
+              <Star />
+            </el-icon>
             <span>文物柜管理</span>
           </template>
           <el-menu-item index="culturalreliclist">文物列表</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="3">
           <template #title>
-            <el-icon><Camera /></el-icon>
+            <el-icon>
+              <Camera />
+            </el-icon>
             <span>实时监控</span>
           </template>
           <el-menu-item index="monitoring">环境监控</el-menu-item>
@@ -47,21 +50,27 @@
         </el-sub-menu>
         <el-sub-menu index="4">
           <template #title>
-            <el-icon><Document /></el-icon>
+            <el-icon>
+              <Document />
+            </el-icon>
             <span>博物馆文档</span>
           </template>
           <el-menu-item index="5-1">博物馆地址</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="5">
           <template #title>
-            <el-icon><Setting /></el-icon>
+            <el-icon>
+              <Setting />
+            </el-icon>
             <span>设置</span>
           </template>
           <el-menu-item index="6-1">主题设置</el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="6">
           <template #title>
-            <el-icon><MessageBox /></el-icon>
+            <el-icon>
+              <MessageBox />
+            </el-icon>
             <span>联系作者</span>
           </template>
           <el-menu-item index="7-1">作者主页</el-menu-item>
@@ -106,6 +115,7 @@ onMounted(() => {
   background-position-x: 60%;
   background-position-y: 65%;
 }
+
 .topNav {
   position: relative;
   height: 13vh;
@@ -117,6 +127,7 @@ onMounted(() => {
   box-shadow: 0 0 3rem rgb(107, 107, 107);
   opacity: 90%;
 }
+
 .leftMenu {
   width: 10vw;
   height: 71%;
@@ -127,16 +138,19 @@ onMounted(() => {
   background-color: #ffffff;
   opacity: 90%;
 }
+
 .logoBox {
   float: left;
   clear: both;
 }
+
 .logoBox img {
   margin: 1vh 0 0 3vw;
   width: 70px;
   height: 70px;
   cursor: pointer;
 }
+
 .userCard {
   position: absolute;
   display: flex;
@@ -150,12 +164,14 @@ onMounted(() => {
   box-sizing: border-box;
   /* background-color: red; */
 }
+
 .logout {
   width: 100px;
   height: 100px;
   margin: 5% 0 0 0;
   /* background-color: aqua; */
 }
+
 .showArea {
   position: absolute;
   padding-left: 3%;
@@ -170,6 +186,7 @@ onMounted(() => {
   box-sizing: border-box;
   opacity: 90%;
 }
+
 .userCard a {
   display: inline-block;
   position: inherit;
@@ -179,23 +196,29 @@ onMounted(() => {
   color: black;
   font-weight: bold;
 }
+
 .sysTitle {
   position: absolute;
   top: 5%;
   left: 12%;
 }
+
 .homeviewDefault img {
-  width: 600px;
+  width: 800px;
   height: 400px;
-  margin-left: 16%;
+  margin-left: 10%;
+  scale: 120%;
 }
+
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 150px;
   min-height: 400px;
 }
+
 .el-menu {
   border-right: none;
 }
+
 .el-sub-menu .el-menu-item {
   min-width: 150px !important;
 }

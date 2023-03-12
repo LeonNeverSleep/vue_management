@@ -1,7 +1,9 @@
 <template>
   <div v-if="adminLevel" class="newAdmin" @click="handleNewAdmin">
     新增管理
-    <el-icon class="newIcon"><CirclePlusFilled /></el-icon>
+    <el-icon class="newIcon">
+      <CirclePlusFilled />
+    </el-icon>
   </div>
   <el-table max-height="400" :data="tableData" style="width: 100%">
     <el-table-column prop="name" label="姓名" width="200" />
@@ -10,29 +12,12 @@
     <el-table-column prop="phone" label="电话号码" width="200" />
     <el-table-column v-if="adminLevel" fixed="right" label="操作" width="200">
       <template #default="scope">
-        <el-button
-          link
-          type="primary"
-          size="small"
-          @click="handleEdit(scope.row)"
-          >编辑</el-button
-        >
-        <el-button
-          @click="handleDelete(scope.row)"
-          link
-          type="primary"
-          size="small"
-          >删除</el-button
-        >
+        <el-button link type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+        <el-button @click="handleDelete(scope.row)" link type="primary" size="small">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
-  <el-dialog
-    v-model="dialogVisible"
-    title="编辑用户信息"
-    width="30%"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="dialogVisible" title="编辑用户信息" width="30%" @close="editDialogClose" :before-close="handleClose">
     <span>姓名</span>
     <el-input v-model="editUser.name"></el-input>
     <span>地址</span>
@@ -41,17 +26,12 @@
     <el-input v-model="editUser.phone"></el-input>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button @click="cancelEdit">取消</el-button>
         <el-button type="primary" @click="confirmEdit">确定</el-button>
       </span>
     </template>
   </el-dialog>
-  <el-dialog
-    v-model="newAdminVisible"
-    title="新增管理员信息"
-    width="30%"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="newAdminVisible" title="新增管理员信息" width="30%" :before-close="handleClose">
     <span>姓名</span>
     <el-input v-model="newUser.name"></el-input><br /><br />
     <span>密码</span>
@@ -59,8 +39,7 @@
     <span>管理员级别</span><br />
     <el-radio-group v-model="newUser.authority" class="ml-4">
       <el-radio label="1" size="large">1</el-radio>
-      <el-radio label="2" size="large">2</el-radio> </el-radio-group
-    ><br />
+      <el-radio label="2" size="large">2</el-radio> </el-radio-group><br />
     <span>地址</span>
     <el-input v-model="newUser.address"></el-input>
     <span>电话号码</span>
@@ -84,7 +63,11 @@ const dialogVisible = ref(false);
 const newAdminVisible = ref(false);
 const adminLevel = ref(false);
 let tableData = ref([]);
-let editUser = ref(null);
+let editUser = ref({
+  name: '',
+  address: '',
+  phone: '',
+});
 let newUser = ref({
   name: "",
   authority: "",
@@ -122,6 +105,14 @@ const handleClose = (done: () => void) => {
       // catch error
     });
 };
+const editDialogClose = () => {
+  console.log("取消了");
+  getUsers().then((res) => {
+    console.log("res=====>", res.data.data);
+    console.log("adminLevel=====>", store.state.adminLevel);
+    tableData.value = res.data.data;
+  });
+}
 const handleNewAdmin = () => {
   console.log("新增管理员");
   newUser.value = {
@@ -141,10 +132,18 @@ const handleDelete = (row: any) => {
       getUsers().then((res) => {
         console.log("res=====>", res.data.data);
         tableData.value = res.data.data;
+        ElMessage({
+          offset: 200,
+          message: "删除成功",
+          center: true,
+        });
       });
     });
   });
 };
+const cancelEdit = () => {
+  dialogVisible.value = false;
+}
 const confirmNew = () => {
   const nameRule = checkUser();
   const phoneRule = checkPhone();
@@ -186,7 +185,7 @@ const confirmNew = () => {
   } else if (!nameRule) {
     ElMessage({
       offset: 200,
-      message: "用户名应为4-12个字符",
+      message: "用户名应为4-12位字母或数字组成",
       center: true,
     });
   } else if (adminExist) {
@@ -198,7 +197,7 @@ const confirmNew = () => {
   } else if (!phoneRule) {
     ElMessage({
       offset: 200,
-      message: "请输入正确的手机号",
+      message: "请输入正确的11位手机号",
       center: true,
     });
   } else {
@@ -209,25 +208,112 @@ const confirmNew = () => {
         console.log("res=====>", res.data.data);
         console.log("adminLevel=====>", store.state.adminLevel);
         tableData.value = res.data.data;
+        ElMessage({
+          offset: 200,
+          message: "新增管理员成功",
+          center: true,
+        });
       });
     });
     newAdminVisible.value = false;
   }
 };
 const confirmEdit = () => {
-  dialogVisible.value = false;
-  console.log("newww==>", editUser.value);
-  edit(editUser.value).then((res) => {
-    console.log("edit res===>", res);
-    getUsers().then((res) => {
-      console.log("res=====>", res.data.data);
-      tableData.value = res.data.data;
-    });
+  console.log("newww==>", editUser.value.name);
+  const editCheckUserRule = editCheckUser();
+  const editCheckPhoneRule = editCheckPhone();
+  const adminExistData = tableData.value;
+  adminExistData.forEach((item: any, index, arr) => {
+    if (item.name === editUser.value.name) {
+      arr.splice(index, 1);
+    }
+  })
+  console.log("筛选完的数组", adminExistData);
+  const editAdminExist = adminExistData.some((item: any) => {
+    if (item.name == editUser.value.name) {
+      return true;
+    }
   });
+  console.log("筛选完的查找结果", editAdminExist);
+  if (editUser.value.name.trim() === "") {
+    ElMessage({
+      offset: 200,
+      message: "用户名不能为空",
+      center: true,
+    });
+  } else if (editUser.value.address.trim() === "") {
+    ElMessage({
+      offset: 200,
+      message: "地址不能为空",
+      center: true,
+    });
+  } else if (editUser.value.phone.trim() === "") {
+    ElMessage({
+      offset: 200,
+      message: "电话号码不能为空",
+      center: true,
+    });
+  } else if (!editCheckUserRule) {
+    ElMessage({
+      offset: 200,
+      message: "用户名应为4-12位字母或数字组成",
+      center: true,
+    });
+  } else if (editAdminExist) {
+    ElMessage({
+      offset: 200,
+      message: "用户名已存在",
+      center: true,
+    });
+  } else if (!editCheckPhoneRule) {
+    ElMessage({
+      offset: 200,
+      message: "请输入正确的11位手机号",
+      center: true,
+    });
+  } else {
+    edit(editUser.value).then((res) => {
+      dialogVisible.value = false;
+
+      console.log("edit res===>", res);
+      if (editUser.value.name == store.state.username) {
+        console.log("改了");
+        store.commit("changeUsername", editUser.value.name);
+        store.commit("changeAddress", editUser.value.address);
+        store.commit("changePhone", editUser.value.phone);
+      }
+      getUsers().then((res) => {
+        console.log("res=====>", res.data.data);
+        tableData.value = res.data.data;
+        ElMessage({
+          offset: 200,
+          message: "编辑成功",
+          center: true,
+        });
+      });
+    });
+  }
+
 };
 const checkUser = () => {
   const reg = /^\w{4,12}$/;
   if (!reg.test(newUser.value.name)) {
+    return false;
+  } else {
+    return true;
+  }
+};
+const editCheckUser = () => {
+  const reg = /^\w{4,12}$/;
+  if (!reg.test(editUser.value.name)) {
+    return false;
+  } else {
+    return true;
+  }
+};
+const editCheckPhone = () => {
+  const reg = /^[1][3,4,5,7,8][0-9]{9}$/;
+  if (!reg.test(editUser.value.phone)) {
     return false;
   } else {
     return true;
@@ -246,6 +332,7 @@ const checkPhone = () => {
 .dialog-footer button:first-child {
   margin-right: 10px;
 }
+
 .newAdmin {
   position: absolute;
   width: 100px;

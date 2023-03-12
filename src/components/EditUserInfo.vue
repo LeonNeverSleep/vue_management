@@ -1,13 +1,8 @@
 <template>
   <div style="margin: 20px" />
-  <el-form
-    label-position="left"
-    label-width="100px"
-    :model="formLabelAlign"
-    style="max-width: 460px"
-  >
+  <el-form label-position="left" label-width="100px" :model="formLabelAlign" style="max-width: 460px">
     <el-form-item label="用户名">
-      <el-input v-model="formLabelAlign.name" />
+      <el-input disabled v-model="formLabelAlign.name" />
     </el-form-item>
     <el-form-item label="密码">
       <el-input v-model="formLabelAlign.password" />
@@ -25,7 +20,9 @@
 
 <script setup>
 import { reactive, ref } from "vue";
+import { ElMessage } from "element-plus";
 import { useStore } from "vuex";
+import { editUserData } from '@/request/user.js'
 const labelPosition = ref("right");
 const store = useStore();
 const formLabelAlign = reactive({
@@ -35,13 +32,58 @@ const formLabelAlign = reactive({
   address: store.state.address,
 });
 const handleClear = () => {
-  formLabelAlign.name = "";
   formLabelAlign.password = "";
   formLabelAlign.phone = "";
   formLabelAlign.address = "";
 };
 const handleChange = () => {
   console.log(formLabelAlign);
+  const phoneRule = checkPhone();
+  if (formLabelAlign.password.trim() == "") {
+    ElMessage({
+      offset: 200,
+      message: "密码不能为空",
+      center: true,
+    });
+  } else if (formLabelAlign.phone.trim() == "") {
+    ElMessage({
+      offset: 200,
+      message: "电话号码不能为空",
+      center: true,
+    });
+  } else if (formLabelAlign.address.trim() == "") {
+    ElMessage({
+      offset: 200,
+      message: "地址不能为空",
+      center: true,
+    });
+  } else if (!phoneRule) {
+    ElMessage({
+      offset: 200,
+      message: "请输入正确的11位手机号",
+      center: true,
+    });
+  } else {
+    editUserData(formLabelAlign).then(() => {
+      ElMessage({
+        offset: 200,
+        message: "修改个人信息成功",
+        center: true,
+      });
+      store.commit("changeUsername", formLabelAlign.name);
+      store.commit("changeAddress", formLabelAlign.address);
+      store.commit("changePhone", formLabelAlign.phone);
+      store.commit("changePassword", formLabelAlign.password);
+    })
+  }
+};
+const checkPhone = () => {
+  const reg = /^[1][3,4,5,7,8][0-9]{9}$/;
+  if (!reg.test(newUser.value.phone)) {
+    return false;
+  } else {
+    return true;
+  }
 };
 </script>
 <style>
@@ -49,11 +91,13 @@ const handleChange = () => {
   margin: 5% 0 0 30%;
   position: relative;
 }
+
 .clearForm {
   position: absolute;
   top: 150%;
   left: 35%;
 }
+
 .editForm {
   position: absolute;
   top: 150%;

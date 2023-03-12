@@ -240,11 +240,11 @@ export default {
           title: [
             {
               text:
-                props.value + props.isSmoke
+                props.value + (props.isSmoke
                   ? "mg/m³"
                   : props.typeValue === 1
-                  ? "℃"
-                  : "%", //动态传递
+                    ? "℃"
+                    : "%"), //动态传递
               x: "50%",
               y: "45%",
               textAlign: "center",
