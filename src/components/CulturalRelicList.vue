@@ -1,7 +1,9 @@
 <template>
   <div class="newRelic" @click="handleNewRelic">
     文物入库
-    <el-icon class="newIcon"><CirclePlusFilled /></el-icon>
+    <el-icon class="newIcon">
+      <CirclePlusFilled />
+    </el-icon>
   </div>
   <el-table max-height="400" :data="relicData" style="width: 100%">
     <el-table-column prop="relicId" label="文物标签" width="200" />
@@ -10,36 +12,13 @@
     <el-table-column prop="relicAuthority" label="所属管理员" width="200" />
     <el-table-column fixed="right" label="管理" width="200">
       <template #default="scope">
-        <el-button
-          link
-          type="primary"
-          size="small"
-          @click="handleEdit(scope.row)"
-          >编辑</el-button
-        >
-        <el-button
-          @click="handleDelete(scope.row)"
-          link
-          type="primary"
-          size="small"
-          >删除</el-button
-        >
-        <el-button
-          @click="handleIntroduction(scope.row)"
-          link
-          type="primary"
-          size="small"
-          >简介</el-button
-        >
+        <el-button link type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+        <el-button @click="handleDelete(scope.row)" link type="primary" size="small">删除</el-button>
+        <el-button @click="handleIntroduction(scope.row)" link type="primary" size="small">简介</el-button>
       </template>
     </el-table-column>
   </el-table>
-  <el-dialog
-    v-model="dialogVisible"
-    title="编辑文物信息"
-    width="30%"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="dialogVisible" title="编辑文物信息" width="30%" :before-close="handleClose">
     <span>文物名称</span>
     <el-input v-model="editData.relicName"></el-input>
     <span>文物类型</span>
@@ -49,7 +28,7 @@
     <span>文物图片地址</span>
     <el-input v-model="editData.relicImg"></el-input>
     <span>所属管理员</span>
-    <el-input v-model="editData.relicAuthority"></el-input>
+    <el-input :disabled="store.state.adminLevel === '1'" v-model="editData.relicAuthority"></el-input>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -57,12 +36,7 @@
       </span>
     </template>
   </el-dialog>
-  <el-dialog
-    v-model="newRelicTable"
-    title="新增入库文物"
-    width="30%"
-    :before-close="handleClose"
-  >
+  <el-dialog v-model="newRelicTable" title="新增入库文物" width="30%" @close="cancelNewRelic" :before-close="handleClose">
     <span>文物名称</span>
     <el-input v-model="newRelicData.relicName"></el-input>
     <span>文物类型</span>
@@ -72,22 +46,14 @@
     <span>文物图片链接</span>
     <el-input v-model="newRelicData.relicImg"></el-input>
     <span>所属管理员</span>
-    <el-input
-      :disabled="store.state.adminLevel === '1'"
-      v-model="newRelicData.relicAuthority"
-    ></el-input>
+    <el-input :disabled="store.state.adminLevel === '1'" v-model="newRelicData.relicAuthority"></el-input>
     <span>文物ID</span>
     <el-input disabled v-model="newRelicData.relicId"></el-input>
-    <img
-      class="RFIDImg"
-      v-if="isScanned"
-      src="@/assets/RFIDSuccess.png"
-      alt=""
-    />
+    <img class="RFIDImg" v-if="isScanned" src="@/assets/RFIDSuccess.png" alt="" />
     <img class="RFIDImg" v-else src="@/assets/RFID.png" alt="" />
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="newRelicTable = false">取消</el-button>
+        <el-button @click="cancelNewRelic">取消</el-button>
         <el-button type="primary" @click="confirmNew">确定</el-button>
       </span>
     </template>
@@ -221,21 +187,47 @@ const handleDelete = (row) => {
   });
 };
 const confirmEdit = () => {
-  dialogVisible.value = false;
-  editRelic(editData.value).then((res) => {
-    console.log("edit res===>", res);
-    if (store.state.adminLevel === "1") {
-      getRelics(store.state.username).then((res) => {
-        console.log("res=====>", res.data.data);
-        relicData.value = res.data.data;
-        store.commit("changeRelicList", editData.value);
-      });
-    } else {
-      getAllRelics().then((res) => {
-        relicData.value = res.data.data;
-      });
-    }
-  });
+  if (editData.value.relicName.trim() === "") {
+    ElMessage({
+      message: "请输入文物名称",
+      center: true,
+      offset: 200,
+    });
+  } else if (editData.value.relicType.trim() === "") {
+    ElMessage({
+      message: "请输入文物类型",
+      center: true,
+      offset: 200,
+    });
+  } else if (editData.value.relicIntro.trim() === "") {
+    ElMessage({
+      message: "请输入文物简介",
+      center: true,
+      offset: 200,
+    });
+  } else if (editData.value.relicImg.trim() === "") {
+    ElMessage({
+      message: "请输入文物图片链接",
+      center: true,
+      offset: 200,
+    });
+  } else {
+    dialogVisible.value = false;
+    editRelic(editData.value).then((res) => {
+      console.log("edit res===>", res);
+      if (store.state.adminLevel === "1") {
+        getRelics(store.state.username).then((res) => {
+          console.log("res=====>", res.data.data);
+          relicData.value = res.data.data;
+          store.commit("changeRelicList", editData.value);
+        });
+      } else {
+        getAllRelics().then((res) => {
+          relicData.value = res.data.data;
+        });
+      }
+    });
+  }
 };
 const confirmNew = () => {
   const userName = newRelicData.value.relicAuthority;
@@ -247,15 +239,45 @@ const confirmNew = () => {
   // console.log("userName有吗", userName);
   // console.log("store.state.userList有吗", store.state.userList);
   // console.log("有吗", adminExist);
-  if (!adminExist) {
+  if (newRelicData.value.relicName.trim() === "") {
+    ElMessage({
+      message: "请输入文物名称",
+      center: true,
+      offset: 200,
+    });
+  } else if (newRelicData.value.relicType.trim() === "") {
+    ElMessage({
+      message: "请输入文物类型",
+      center: true,
+      offset: 200,
+    });
+  } else if (newRelicData.value.relicIntro.trim() === "") {
+    ElMessage({
+      message: "请输入文物简介",
+      center: true,
+      offset: 200,
+    });
+  } else if (newRelicData.value.relicImg.trim() === "") {
+    ElMessage({
+      message: "请输入文物图片链接",
+      center: true,
+      offset: 200,
+    });
+  } else if (newRelicData.value.relicAuthority.trim() === "") {
+    ElMessage({
+      message: "请输入文物所属管理员",
+      center: true,
+      offset: 200,
+    });
+  }
+  else if (!adminExist) {
     ElMessage({
       message: "管理员不存在",
       center: true,
       offset: 200,
     });
-    return;
   }
-  if (!isScanned.value) {
+  else if (!isScanned.value) {
     ElMessage({
       message: "请将文物标签靠近读卡器",
       center: true,
@@ -279,6 +301,10 @@ const confirmNew = () => {
     });
   }
 };
+const cancelNewRelic = () => {
+  newRelicTable.value = false
+  isScanned.value = false;
+}
 onMounted(() => {
   getUsers().then((res) => {
     console.log("res=====>", res.data.data);
@@ -312,12 +338,14 @@ onMounted(() => {
   box-shadow: 0 0 3rem rgb(169, 168, 168);
   cursor: pointer;
 }
+
 .RFIDImg {
   width: 70px;
   height: 70px;
   margin-left: 150px;
   margin-top: 20px;
 }
+
 .introImg {
   width: 100px;
   height: 100px;

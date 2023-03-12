@@ -48,7 +48,7 @@
           <el-menu-item index="monitoring">环境监控</el-menu-item>
           <el-menu-item index="history">历史数据</el-menu-item>
         </el-sub-menu>
-        <el-sub-menu index="4">
+        <!-- <el-sub-menu index="4">
           <template #title>
             <el-icon>
               <Document />
@@ -74,7 +74,7 @@
             <span>联系作者</span>
           </template>
           <el-menu-item index="7-1">作者主页</el-menu-item>
-        </el-sub-menu>
+        </el-sub-menu> -->
       </el-menu>
     </div>
     <div class="showArea">
