@@ -79,7 +79,7 @@ const handleChange = () => {
 };
 const checkPhone = () => {
   const reg = /^[1][3,4,5,7,8][0-9]{9}$/;
-  if (!reg.test(newUser.value.phone)) {
+  if (!reg.test(formLabelAlign.phone)) {
     return false;
   } else {
     return true;

@@ -11,8 +11,10 @@
         <el-switch @change="handleLedChange" v-model="ledState" active-text="开" inactive-text="关" /><br />
       </div>
       <div class="buzzer">
-        蜂鸣器报警
-        <el-switch @change="handleBuzChange" v-model="buzzerState" active-text="开" inactive-text="关" />
+        蜂鸣器警报:
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span v-if="buzzerState">开</span>
+        <span v-else>关</span>
+        <el-button @click="handleBuzChange">关闭警报</el-button>
       </div>
       <!-- <div class="door">
         安全柜门锁
@@ -106,11 +108,7 @@ const deviceMqttMsg = () => {
 
 const handleBuzChange = () => {
   const buzTopic = "fjjxu/sub/1901/13";
-  if (buzzerState.value === false) {
-    client.value.publish(buzTopic, "unWarning");
-  } else {
-    client.value.publish(buzTopic, "warning");
-  }
+  client.value.publish(buzTopic, "unWarning");
 };
 const handleLedChange = () => {
   const ledTopic = "fjjxu/sub/1901/13";

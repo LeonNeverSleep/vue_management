@@ -9,7 +9,7 @@
       </div>
       <div class="userCard">
         <h1>
-          你好！{{ store.state.username }}
+          你好!{{ store.state.username }}
           {{ store.state.adminLevel }}级管理员，
         </h1>
         <div class="logout">

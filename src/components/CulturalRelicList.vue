@@ -25,8 +25,20 @@
     <el-input v-model="editData.relicType"></el-input>
     <span>文物简介</span>
     <el-input v-model="editData.relicIntro"></el-input>
-    <span>文物图片地址</span>
-    <el-input v-model="editData.relicImg"></el-input>
+    <span>文物图片</span>
+    <el-input hidden v-model="editData.relicImg"></el-input>
+    <el-upload :file-list="fileList" ref="upload" class="upload-demo" action="/api/fileUpload" :limit="1"
+      :on-exceed="handleExceed" :on-success="handleOnSuccess" :onChange="handleOnChange" :auto-upload="true"
+      :before-upload="handleBeforeUpload">
+      <template #trigger>
+        <el-button type="primary">选择文件</el-button>
+      </template>
+      <template #tip>
+        <div class="el-upload__tip text-red">
+          仅限一张图片，新图片会覆盖旧图片
+        </div>
+      </template>
+    </el-upload>
     <span>所属管理员</span>
     <el-input :disabled="store.state.adminLevel === '1'" v-model="editData.relicAuthority"></el-input>
     <template #footer>
@@ -43,8 +55,20 @@
     <el-input v-model="newRelicData.relicType"></el-input>
     <span>文物简介</span>
     <el-input v-model="newRelicData.relicIntro"></el-input>
-    <span>文物图片链接</span>
-    <el-input v-model="newRelicData.relicImg"></el-input>
+    <span>文物图片</span>
+    <el-input hidden v-model="newRelicData.relicImg"></el-input>
+    <el-upload :file-list="fileList2" ref="upload2" class="upload-demo" action="/api/fileUpload" :limit="1"
+      :on-exceed="handleExceed2" :on-success="handleOnSuccess2" :onChange="handleOnChange2" :auto-upload="true"
+      :before-upload="handleBeforeUpload2">
+      <template #trigger>
+        <el-button type="primary">选择文件</el-button>
+      </template>
+      <template #tip>
+        <div class="el-upload__tip text-red">
+          仅限一张图片，新图片会覆盖旧图片
+        </div>
+      </template>
+    </el-upload>
     <span>所属管理员</span>
     <el-input :disabled="store.state.adminLevel === '1'" v-model="newRelicData.relicAuthority"></el-input>
     <span>文物ID</span>
@@ -65,7 +89,7 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import * as mqtt from "mqtt/dist/mqtt.min.js";
 import {
   getRelics,
@@ -78,6 +102,53 @@ import { onMounted, reactive, ref } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import { useStore } from "vuex";
 import { getUsers } from "@/request/user.js";
+import { genFileId } from 'element-plus'
+import type { UploadInstance, UploadProps, UploadRawFile } from 'element-plus'
+let fileList = ref([])
+let fileList2 = ref([])
+let fileListLength = ref(0)
+let fileListLength2 = ref(0)
+const upload = ref<UploadInstance>()
+const upload2 = ref<UploadInstance>()
+const handleOnChange = (uploadFile, uploadFiles) => {
+  fileListLength.value = uploadFiles.length
+  if (uploadFiles.length > 1) {
+    upload.value?.clearFiles();
+  }
+}
+const handleOnChange2 = (uploadFile, uploadFiles) => {
+  fileListLength2.value = uploadFiles.length
+  if (uploadFiles.length > 1) {
+    upload2.value?.clearFiles();
+  }
+}
+const handleOnSuccess = (res) => {
+  editData.value.relicImg = res.filename;
+}
+const handleOnSuccess2 = (res) => {
+  newRelicData.value.relicImg = res.filename;
+}
+const handleBeforeUpload = (rawFile) => {
+  console.log("handleBeforeUpload", rawFile);
+}
+const handleBeforeUpload2 = (rawFile) => {
+  console.log("handleBeforeUpload2", rawFile);
+}
+const handleExceed: UploadProps['onExceed'] = (files) => {
+  console.log("handleExceed", files);
+  upload.value!.clearFiles()
+  const file = files[0] as UploadRawFile
+  file.uid = genFileId()
+  upload.value!.handleStart(file)
+}
+const handleExceed2: UploadProps['onExceed'] = (files) => {
+  console.log("handleExceed", files);
+  upload2.value!.clearFiles()
+  const file = files[0] as UploadRawFile
+  file.uid = genFileId()
+  upload2.value!.handleStart(file)
+}
+
 const store = useStore();
 let relicData = ref(null);
 let editData = ref(null);
@@ -128,7 +199,7 @@ const handleIntroduction = (row) => {
   console.log("intro", row);
   introVisible.value = true;
   relicIntro.value = row.relicIntro;
-  relicImg.value = row.relicImg;
+  relicImg.value = "/api" + row.relicImg;
 };
 const handleEdit = (row) => {
   console.log("edit", row);
@@ -170,7 +241,7 @@ const handleNewRelic = () => {
 const handleDelete = (row) => {
   console.log("delete row===>", row);
   ElMessageBox.confirm("确定要删除此文物吗？").then(() => {
-    deleteRelic({ id: row.id }).then((res) => {
+    deleteRelic({ relicId: row.relicId }).then((res) => {
       console.log("del res===>", res);
       if (store.state.adminLevel === "1") {
         getRelics(store.state.username).then((res) => {
@@ -207,7 +278,13 @@ const confirmEdit = () => {
     });
   } else if (editData.value.relicImg.trim() === "") {
     ElMessage({
-      message: "请输入文物图片链接",
+      message: "请上传文物图片",
+      center: true,
+      offset: 200,
+    });
+  } else if (fileListLength.value === 0) {
+    ElMessage({
+      message: "请上传文物图片",
       center: true,
       offset: 200,
     });
@@ -220,25 +297,33 @@ const confirmEdit = () => {
           console.log("res=====>", res.data.data);
           relicData.value = res.data.data;
           store.commit("changeRelicList", editData.value);
+          ElMessage({
+            message: "编辑成功",
+            center: true,
+            offset: 200,
+          });
         });
       } else {
         getAllRelics().then((res) => {
           relicData.value = res.data.data;
+          ElMessage({
+            message: "编辑成功",
+            center: true,
+            offset: 200,
+          });
         });
       }
     });
   }
 };
 const confirmNew = () => {
+  console.log("newRelicData.value33333", newRelicData.value);
   const userName = newRelicData.value.relicAuthority;
   const adminExist = store.state.userList.some((item) => {
     if (item.name == userName) {
       return true;
     }
   });
-  // console.log("userName有吗", userName);
-  // console.log("store.state.userList有吗", store.state.userList);
-  // console.log("有吗", adminExist);
   if (newRelicData.value.relicName.trim() === "") {
     ElMessage({
       message: "请输入文物名称",
@@ -259,7 +344,7 @@ const confirmNew = () => {
     });
   } else if (newRelicData.value.relicImg.trim() === "") {
     ElMessage({
-      message: "请输入文物图片链接",
+      message: "请上传文物图片",
       center: true,
       offset: 200,
     });
@@ -286,16 +371,27 @@ const confirmNew = () => {
   } else {
     newRelicTable.value = false;
     addRelic(newRelicData.value).then((res) => {
-      console.log("edit res===>", res);
+      console.log("addRelic res===>", res);
       if (store.state.adminLevel === "1") {
         getRelics(store.state.username).then((res) => {
-          console.log("res=====>", res.data.data);
+          console.log("ddddres=====>", res.data.data);
           relicData.value = res.data.data;
-          store.commit("changeRelicList", editData.value);
+          // store.commit("changeRelicList", editData.value);
+          ElMessage({
+            message: "新增文物成功",
+            center: true,
+            offset: 200,
+          });
         });
       } else {
         getAllRelics().then((res) => {
           relicData.value = res.data.data;
+          console.log("ddddddddres=====>", res.data.data);
+          ElMessage({
+            message: "新增文物成功",
+            center: true,
+            offset: 200,
+          });
         });
       }
     });
